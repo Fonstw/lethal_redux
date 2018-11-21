@@ -52,6 +52,7 @@ public class PlayerScript : MonoBehaviour
         position = startPosition = transform.position;
         spriteRenderer = GetComponent<SpriteRenderer>();
         swingCollider.enabled = false;
+        position.y = Random.Range(-3.5f, 3.5f);
     }
 
     //checking if we hit the ball
@@ -61,7 +62,7 @@ public class PlayerScript : MonoBehaviour
         if (ball.lastHitter != playerNum) //don't hit the ball twice
         {
             //you can do exemptions or calculations with this depending on the ball or the player
-            float hitPause = 0.1f;
+            float hitPause = .1f;
             
             ball.GetHit(this, hitPause);//send info to the ball
             StopAllCoroutines(); //stop the swinging 
@@ -70,18 +71,18 @@ public class PlayerScript : MonoBehaviour
     }
 
     //checking if we get hit
-    public void OnCollisionEnter(Collision collision)
-    {
-        BallScript ball = collision.rigidbody.GetComponent<BallScript>();
+    //public void OnCollisionEnter(Collision collision)
+    //{
+    //    BallScript ball = collision.rigidbody.GetComponent<BallScript>();
 
-        //only if the ball is flying around, you could put other exemptions here
-        if (ball != null && ball.ballState == BallScript.BallState.NORMAL) 
-        {
-            StopAllCoroutines(); //stop whatever you're doing
-            StartCoroutine(DieCoroutine()); //start dying
-            ball.StartCoroutine(ball.HitPlayerCoroutine(this)); //remove the ball but let it know who it killed
-        }
-    }
+    //    //only if the ball is flying around, you could put other exemptions here
+    //    if (ball != null && ball.ballState == BallScript.BallState.NORMAL) 
+    //    {
+    //        StopAllCoroutines(); //stop whatever you're doing
+    //        StartCoroutine(DieCoroutine()); //start dying
+    //        ball.StartCoroutine(ball.HitPlayerCoroutine(this)); //remove the ball but let it know who it killed
+    //    }
+    //}
 
     //we update the state of the player
     //what sprite to show and what hitbox to enable
@@ -106,8 +107,13 @@ public class PlayerScript : MonoBehaviour
                     position += Vector3.right * moveSpeed;
                 if (Input.GetKey(leftKey))
                     position += Vector3.left * moveSpeed;
+                if (Input.GetKey(upKey))
+                    position += Vector3.up * moveSpeed/* * .6667f*/;
+                if (Input.GetKey(downKey))
+                    position += Vector3.down * moveSpeed/* * .6667f*/;
 
                 position.x = Mathf.Clamp(position.x, -8f, 8f);
+                position.y = Mathf.Clamp(position.y, -3.5f, 3.5f);
                 break;
 
             case PlayerState.SWINGING:
@@ -131,18 +137,18 @@ public class PlayerScript : MonoBehaviour
                     if (Input.GetKey(rightKey))
                         BallScript.ball.direction = Vector3.right;
                     if (Input.GetKey(upKey))
-                        BallScript.ball.direction = new Vector2(0.5f, 0.5f);
+                        BallScript.ball.direction = new Vector2(0.5f, 0.33f);
                     if (Input.GetKey(downKey))
-                        BallScript.ball.direction = new Vector2(0.5f, -0.5f);
+                        BallScript.ball.direction = new Vector2(0.5f, -0.33f);
                 }
                 else
                 {
                     if (Input.GetKey(leftKey))
                         BallScript.ball.direction = Vector3.left;
                     if (Input.GetKey(upKey))
-                        BallScript.ball.direction = new Vector2(-0.5f, 0.5f);
+                        BallScript.ball.direction = new Vector2(-0.5f, 0.33f);
                     if (Input.GetKey(downKey))
-                        BallScript.ball.direction = new Vector2(-0.5f, -0.5f);
+                        BallScript.ball.direction = new Vector2(-0.5f, -0.33f);
                 }
                 //tip: you can use BallScript.ball to access the ball from anywhere
                 break;
@@ -198,7 +204,7 @@ public class PlayerScript : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         playerState = PlayerState.DEAD;
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(1.0f);
 
         playerState = PlayerState.NORMAL;
         position = startPosition;

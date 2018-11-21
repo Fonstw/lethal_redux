@@ -77,7 +77,7 @@ public class BallScript : MonoBehaviour {
         //you can set the starting speed in the editor
         //we can play around with this of course
         //try speed *= 1.1f instead
-        speed = 0.3f;
+        speed *= 1.1667f;
         lastHitter = byPlayer.playerNum;
 
         //default direction set to which player it is
@@ -108,7 +108,7 @@ public class BallScript : MonoBehaviour {
         position = 1000 * Vector3.down;
         speed = startSpeed;
 
-        yield return new WaitForSeconds(2.4f);
+        yield return new WaitForSeconds(1.4f);
 
         lastHitter = -1;
         ballState = BallState.SERVE;
