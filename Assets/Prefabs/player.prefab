@@ -124,9 +124,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNum: 0
-  moveSpeed: 0.3
+  moveSpeed: 0.2
   swingDuration: 0.25
-  recoveryDuration: 0.27
+  recoveryDuration: 0.45
+  lowSpeed: 0.1
+  midSpeed: 0.25
+  higSpeed: 0.4
   swingCollider: {fileID: 65710425035584706}
   idleSprite: {fileID: 21300000, guid: 88c983bcff862b44a80564693057bd49, type: 3}
   swingSprite: {fileID: 21300012, guid: 88c983bcff862b44a80564693057bd49, type: 3}

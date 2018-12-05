@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class BallScript : MonoBehaviour {
 
-    public float startSpeed;
+    public float startSpeed = .3f;
+    public float maxSpeed = .5f;
+    public float increaseOnHit = 1.1f;
     [HideInInspector]
     public float speed;
     [HideInInspector]
@@ -24,15 +26,19 @@ public class BallScript : MonoBehaviour {
     }
     [HideInInspector]
     public BallState ballState = BallState.SERVE;
-    private Vector3 startPosition;
 
     public static BallScript ball;
 
     void Start () {
         ball = this;
         speed = startSpeed;
-        position = startPosition = transform.position;
-	}
+
+        //randomly spawn left or right
+        if (Random.Range(0, 2) < 1)
+            position = new Vector3(8, 0, 0);
+        else
+            position = new Vector3(-8, 0, 0);
+    }
 
     //updating the state of the ball
     void Update() {
@@ -46,15 +52,15 @@ public class BallScript : MonoBehaviour {
         //if the ball is not dead, we have to make sure it stays in the stage
         if (ballState != BallState.STANDBY)
         {
-            if (position.x < -9)
+            if (position.x < -12)
             {
                 HitWall(true);
-                position.x = -9;
+                position.x = -12;
             }
-            if (position.x > 9)
+            if (position.x > 12)
             {
                 HitWall(true);
-                position.x = 9;
+                position.x = 12;
             }
             if (position.y < -5)
             {
@@ -72,12 +78,17 @@ public class BallScript : MonoBehaviour {
     }
 
     //the ball gets hit
-    public void GetHit(PlayerScript byPlayer, float hitPause)
+    public void GetHit(PlayerScript byPlayer, float newSpeed, float hitPause)
     {
         //you can set the starting speed in the editor
         //we can play around with this of course
         //try speed *= 1.1f instead
-        speed *= 1.1667f;
+
+        speed = newSpeed;
+
+        //if (speed < maxSpeed)
+        //    speed *= increaseOnHit;
+
         lastHitter = byPlayer.playerNum;
 
         //default direction set to which player it is
@@ -100,6 +111,10 @@ public class BallScript : MonoBehaviour {
         yield return new WaitForSeconds(hitPause);
 
         ballState = BallState.NORMAL;
+
+        yield return new WaitForSeconds(hitPause * 6f);
+
+        lastHitter = -1;
     }
 
     public IEnumerator HitPlayerCoroutine(PlayerScript player)

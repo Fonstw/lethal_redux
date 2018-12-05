@@ -12,6 +12,10 @@ public class PlayerScript : MonoBehaviour
     public float swingDuration;
     public float recoveryDuration;
 
+    public float lowSpeed = .15f;
+    public float midSpeed = .30f;
+    public float higSpeed = .45f;
+
     //you can add stuff here and just drag a sprite on it in the editor
     //same for the ball, if you want a different visual there
     //spriteRenderer.sprite = whateverSprite; is how you change picture
@@ -61,10 +65,26 @@ public class PlayerScript : MonoBehaviour
         BallScript ball = otherCollider.GetComponent<BallScript>();
         if (ball.lastHitter != playerNum) //don't hit the ball twice
         {
-            //you can do exemptions or calculations with this depending on the ball or the player
-            float hitPause = .1f;
-            
-            ball.GetHit(this, hitPause);//send info to the ball
+            float newSpeed = midSpeed;
+            switch (playerNum)
+            {
+                case 0:
+                    if (Input.GetKey(rightKey))
+                        newSpeed = higSpeed;
+                    else if (Input.GetKey(leftKey))
+                        newSpeed = lowSpeed;
+                    break;
+                default:
+                    if (Input.GetKey(leftKey))
+                        newSpeed = higSpeed;
+                    else if (Input.GetKey(rightKey))
+                        newSpeed = lowSpeed;
+                    break;
+            }
+
+            float hitPause = newSpeed;
+
+            ball.GetHit(this, newSpeed, hitPause);//send info to the ball
             StopAllCoroutines(); //stop the swinging 
             StartCoroutine(HitCoroutine(hitPause)); //start the hitting with the right hitpause duration
         }
@@ -112,7 +132,11 @@ public class PlayerScript : MonoBehaviour
                 if (Input.GetKey(downKey))
                     position += Vector3.down * moveSpeed/* * .6667f*/;
 
-                position.x = Mathf.Clamp(position.x, -8f, 8f);
+                if (playerNum == 0)
+                    position.x = Mathf.Clamp(position.x, -11f, -2.5f);
+                else if (playerNum == 1)
+                    position.x = Mathf.Clamp(position.x, 2.5f, 11f);
+
                 position.y = Mathf.Clamp(position.y, -3.5f, 3.5f);
                 break;
 
